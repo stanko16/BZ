@@ -1,16 +1,17 @@
 package structureDefinition;
 
+
 public class Cell {
 
 	//Some parameters regarding all the cells
-	private static double k1 = 1;
-	private static double k2 = 1;
-	private static double g = 7;
-	public static int n = 255;
-	private static int leftNeighbours=1, rightNeighbours=1, upNeighbours=1, downNeighbours=1;
+	private static double k1 = 1; //Infected coefficient - Influence of infected cells (gray ones)
+	private static double k2 = 1; //Ill coefficient - Influence of ill cells (black ones)
+	private static double g = 7; //Speed coefficient How fast an infected becomes ill
+	public static int n = 255; //the state value of an ill cell; I chose 255 because rgb
+	private static int leftNeighbours=1, rightNeighbours=1, upNeighbours=1, downNeighbours=1;//neighbors analized
 	
 	//Parameters regarding this cell
-	private  int state;
+	private  int state; //0 = healthy, 0 < state < n = infected, n = ill
 	private int column;
 	private int row;
 	private int nextState;
@@ -50,79 +51,60 @@ public class Cell {
 		for (int i = -1*leftNeighbours; i < rightNeighbours+1; i++) { //For each neighbor (left to right)
 			for (int j = -1*upNeighbours; j < downNeighbours+1; j++) {//For each neighbor (top to bottom)
 				if(!(i==0 && j==0)){
-					try{
-						Cell x = Matrix.getCell(this.getColumn()+i, this.getRow()+j);
-						cellStateSum+=x.getState();
-						if (x.getState()>0&&x.getState()<n){
-							numOfInf++;
-							} else if(x.getState()==n){
-								numOfIll++;
-							}
-					}catch(Exception e){
+					Cell x = Matrix.getCell(this.getColumn()+i, this.getRow()+j); //Get the neighbor cell
+					cellStateSum+=x.getState();
+					if (x.getState()>0 && x.getState()<n){//If the cell is infected
+						numOfInf++; //increase counter of infected
+					} 
+					else if(x.getState()==n){// if it is an ill cell
+							numOfIll++; //increase counter of ill
 					}
 				}
 		  	}  
 		}
 		
-		int calcState = (int)(numOfInf/k1 + numOfIll/k2);
+		int calcState = (int)(numOfInf/k1 + numOfIll/k2);//divide the counters by the coefficients
 		int curState = this.getState();
-		if (curState==0){this.setNextState(calcState);}
-		else if (curState==n){this.setNextState(0);}
-		else if (curState < n && curState > 0) {
-			int state = (cellStateSum/(numOfInf + numOfIll + 1))+ (int) g;
-			if (state>n){state-=n;}
-			this.setNextState(state);
+		if (curState==0){this.setNextState(calcState);}//If the current state is healthy, infect it's next state
+		else if (curState==n){this.setNextState(0);} //If it is ill, make next state healthy
+		else if (curState < n && curState > 0) { //if it is infected
+			int state = (cellStateSum/(numOfInf + numOfIll + 1))+ (int) g; //do some more calcs with the coefficient g
+			if (state>n){state-=n;} //if it goes out of the limit, we subtract n to that number and get an acceptable one
+			this.setNextState(state);//We change next state
 			}
 	}
 	
-	/**
-	 * @param state the state to set
-	 */
+
 	public void setState(int state) {
 		this.state = state;
 	}
 	
-	/**
-	 * @return the state
-	 */
+
 	public int getState(){
 		return this.state;
 	}
 	
-	/**
-	 * @return the column
-	 */
+
 	public int getColumn() {
 		return column;
 	}
-	/**
-	 * @param column the column to set
-	 */
+
 	public void setColumn(int column) {
 		this.column = column;
 	}
-	/**
-	 * @return the row
-	 */
+
 	public int getRow() {
 		return row;
 	}
-	/**
-	 * @param row the row to set
-	 */
+
 	public void setRow(int row) {
 		this.row = row;
 	}
-	/**
-	 * @return the nextState
-	 */
+	
 	public int getNextState(){
 		return this.nextState;
 	}
 	
-	/**
-	 * @param nextState the nextState to set
-	 */
 	public void setNextState(int nextState) {
 		this.nextState = nextState;
 	}
@@ -138,7 +120,7 @@ public class Cell {
 	public static double getK2() {
 		return k2;
 	}
-
+	
 	public static void setK2(double k2) {
 		Cell.k2 = k2;
 	}
@@ -147,13 +129,13 @@ public class Cell {
 		return g;
 	}
 
+	/**
+	 * Setting the new speed coefficient. If it is not between 0 and n, the rest of the division per n is set as value
+	 * @param g the new speed coefficient
+	 */
 	public static void setG(double g) {
-		while(g<0){
-			g+=255;
-			}
-		while(g>255){
-			g-=255;
-			}
+		if(g<0) g=(g*-1)%n;
+		if(g>n) g=g%n;
 		Cell.g = g;
 	}
 
