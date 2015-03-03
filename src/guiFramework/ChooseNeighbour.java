@@ -83,7 +83,7 @@ public class ChooseNeighbour extends JFrame {
 				int r = Integer.parseInt(right.getText());
 				if(-u<d && -l<r){
 					Cell.setUpNeighbours(u);
-					Cell.setDbownNeighbours(d);
+					Cell.setDownNeighbours(d);
 					Cell.setLeftNeighbours(l);
 					Cell.setRightNeighbours(r);}
 				else{JOptionPane.showMessageDialog(null,

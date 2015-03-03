@@ -34,8 +34,8 @@ import structureDefinition.Matrix;
 public class GuiManagerBZ {
 	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	public static boolean condition = true;
-	private static int WIDTH = 12000;
-	private static int HEIGHT = 9000;
+	private static int WIDTH = 5000;
+	private static int HEIGHT = 5000;
 	private static CanvasManager cm;
 	private static Timer timer = new Timer(10, null);
 	private static boolean began = false;

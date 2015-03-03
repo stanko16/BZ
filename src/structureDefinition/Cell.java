@@ -2,17 +2,28 @@ package structureDefinition;
 
 public class Cell {
 
+	//Some parameters regarding all the cells
 	private static double k1 = 1;
 	private static double k2 = 1;
 	private static double g = 7;
 	public static int n = 255;
+	private static int leftNeighbours=1, rightNeighbours=1, upNeighbours=1, downNeighbours=1;
+	
+	//Parameters regarding this cell
 	private  int state;
 	private int column;
 	private int row;
 	private int nextState;
 	
-	private static int leftNeighbours=1, rightNeighbours=1, upNeighbours=1, downNeighbours=1;
+	
 
+	/**
+	 * Creates a Cell object setting the basic parameters.
+	 * 
+	 * @param state The initial state of the cell
+	 * @param column The column it belongs to in the matrix
+	 * @param row The row it belongs to in the matrix
+	 */
 	public Cell(int state, int column, int row) {
 		this.state = state;
 		this.column = column;
@@ -33,13 +44,12 @@ public class Cell {
 	 * of this cell
 	 */
 	public void check(){
-		int numOfInf = 0;
-		int numOfIll = 0;
+		int numOfInf = 0; //counter of infected neighbors
+		int numOfIll = 0; //counter of ill neighbors
 		int cellStateSum = this.getState();
-		for (int i = -1*leftNeighbours; i < rightNeighbours+1; i++) {
-			for (int j = -1*upNeighbours; j < downNeighbours+1; j++) {
-				if(i==0 && j==0){
-				}else{
+		for (int i = -1*leftNeighbours; i < rightNeighbours+1; i++) { //For each neighbor (left to right)
+			for (int j = -1*upNeighbours; j < downNeighbours+1; j++) {//For each neighbor (top to bottom)
+				if(!(i==0 && j==0)){
 					try{
 						Cell x = Matrix.getCell(this.getColumn()+i, this.getRow()+j);
 						cellStateSum+=x.getState();
@@ -51,7 +61,7 @@ public class Cell {
 					}catch(Exception e){
 					}
 				}
-			}
+		  	}  
 		}
 		
 		int calcState = (int)(numOfInf/k1 + numOfIll/k2);
