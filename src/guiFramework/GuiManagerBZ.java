@@ -11,6 +11,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -28,18 +29,20 @@ import structureDefinition.Cell;
 import structureDefinition.Matrix;
 
 /**
- * @author Ovkaric
+ * @author Stanko Ovkaric
  * 
  */
 public class GuiManagerBZ {
+	
+	//Attributes needed inside and outside the this class. Those ones needed in the classes inside this one are private, the public ones may be used outside.
 	public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	public static boolean condition = true;
 	private static int WIDTH = 5000;
 	private static int HEIGHT = 5000;
 	private static CanvasManager cm;
-	private static Timer timer = new Timer(10, null);
+	private static Timer timer = new Timer(0, null);
 	private static boolean began = false;
 	public static JFrame frame;
+	
 	private static int red = 0;
 	private static int green = 0;
 	private static int blue = 0;
@@ -47,62 +50,44 @@ public class GuiManagerBZ {
 	private static JButton stop;
 	private static JButton step;
 	private static JButton start;
+	private static JMenuItem speed;
 
 	public static void main(String[] args) {
-
+		//Frame and Canvas creation
 		cm = new CanvasManager(WIDTH, HEIGHT);
 		frame = new JFrame("Belousov-Zhabotinsky reactions generator");
-
 		cm.setSize(WIDTH / 10, HEIGHT / 10);
 		frame.setSize(WIDTH/10 +24, HEIGHT / 10+74);
-		cm.addMouseListener(new MouseListener() {
+		cm.addMouseListener(new MouseAdapter() {
 
-			@Override
+			/**
+			 * When a point in the canvas is clicked, the state of that cell increases and the color of that point is also changed
+			 */
 			public void mouseClicked(MouseEvent arg0) {
+				//We get the x and y of the point we  pressed with respect to the canvas
 				Point point = MouseInfo.getPointerInfo().getLocation();
 				Point point2 = cm.getLocationOnScreen();
-				int x = (int) ((point.x - point2.x) / CanvasManager.n);
+				int x = (int) ((point.x - point2.x) / CanvasManager.n); //we divide the value by the number of pixels considered to be a Cell
 				int y = (int) ((point.y - point2.y) / CanvasManager.n);
+				//We get the state of the cell in that position and change the color of that space in the canvas
 				int state = Matrix.getMatrix()[x][y].getState();
 				if (state < Cell.n) {
-
-					Color colr = new Color((state + 1), state / 2, state / 3);
+					Color colr = new Color(255-state, 255-state, 255-state);
 					cm.fill(x, y, colr);
 				} else {
 					Color colr = new Color(0, 0, 0);
 					cm.fill(x, y, colr);
 				}
-				Matrix.setCell(x, y);
+				//at the end we increment the state of the cell
+				Matrix.incrementCellState(x, y);
 			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
+			
 		});
 
 		JScrollPane scroll = new JScrollPane(cm);
 		DragScrollHandler.createDragScrollHandlerFor(cm);
 
+		//Buttons
 		step = new JButton("STEP");
 		step.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -134,6 +119,8 @@ public class GuiManagerBZ {
 			}
 		});
 
+		
+		//Menu
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Options");
 		JMenu operations = new JMenu("Operations");
@@ -144,10 +131,18 @@ public class GuiManagerBZ {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				timer.setDelay(timer.getDelay() + 40);
+				if(timer.getDelay()>0) {
+					speed.setEnabled(true);
+				}
 			}
 		});
 
-		final JMenuItem speed = new JMenuItem("SpeedUp");
+		speed = new JMenuItem("SpeedUp");
+		if(timer.getDelay()==0) {
+			speed.setEnabled(false);
+		}else {
+			speed.setEnabled(true);
+		}
 		speed.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -265,24 +260,43 @@ public class GuiManagerBZ {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Matrix.GenerateVoidMatrix(WIDTH / 10, HEIGHT / 10);
 		repaintCanvas();
+		
+		
+		//Here we're telling the user how to begin
+		JOptionPane.showMessageDialog(null,"To begin, click anywhere on the white space and press 'Start' \n Don't forget to check the operations menu!","Tutorial", 1);
+		
+		
+		
 	}
-
+	
+	/**
+	 * If the timer is running, it is stopped
+	 */
 	public static void stopTimer() {
 		if (timer.isRunning())
 			timer.stop();
 	}
 
+	/**
+	 * Apply only once the update on all the cells
+	 */
 	public static void stepTimer() {
 		checkUpdate();
 	}
 
+	/**
+	 * Starts the timer
+	 */
 	public static void startTimer() {
 		timer.start();
 	}
 
+	/**
+	 * The timer is set with 0 delay (full speed) and starts the updating the cells in the matrix
+	 */
 	public static void beginTimer() {
 		began = true;
-		timer = new Timer(80, new ActionListener() {
+		timer = new Timer(0, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				checkUpdate();
@@ -291,12 +305,19 @@ public class GuiManagerBZ {
 		timer.start();
 	}
 
+	/**
+	 * This method checks the cells in the matrix, setting the next state for each one of them and then updates their value.
+	 * Finally the canvas is repaint to see the changes.
+	 */
 	public static void checkUpdate() {
 		Matrix.checkMatrix();
 		Matrix.updateMatrix();
 		repaintCanvas();
 	}
 
+	/**
+	 * Each cell is painted in the canvas based on it's current state and the color decided by the user.
+	 */
 	public static void repaintCanvas() {
 		for (int j = 0; j < WIDTH / 10; j++) {
 			for (int i = 0; i < HEIGHT / 10; i++) {

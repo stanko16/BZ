@@ -10,9 +10,6 @@ import structureDefinition.Cell;
 
 public class ChooseNeighbour extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField upper;
@@ -75,6 +72,10 @@ public class ChooseNeighbour extends JFrame {
 		JButton btnApply = new JButton("Update!");
 		btnApply.setBounds(174, 155, 89, 23);
 		btnApply.addActionListener(new ActionListener() {
+			
+			/**
+			 * With this method, we set the neighbors of every cell  based on the inputs
+			 */
 			public void actionPerformed(ActionEvent arg0) {
 				try{
 				int u = Integer.parseInt(upper.getText());
@@ -98,6 +99,9 @@ public class ChooseNeighbour extends JFrame {
 		JButton btnNewButton = new JButton("?");
 		btnNewButton.setBounds(28, 155, 68, 23);
 		btnNewButton.addActionListener(new ActionListener() {
+			/**
+			 * Brief explanation of the use of this panel shown on a MessageDialog
+			 */
 			public void actionPerformed(ActionEvent arg0) {
 				JOptionPane.showMessageDialog(null,"Please set the number of neighbours" +
 						" that you want a single cell to interact with. ","?", 1);
