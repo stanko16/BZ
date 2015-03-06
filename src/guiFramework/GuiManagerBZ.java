@@ -70,13 +70,18 @@ public class GuiManagerBZ {
 				int x = (int) ((point.x - point2.x) / CanvasManager.n); //we divide the value by the number of pixels considered to be a Cell
 				int y = (int) ((point.y - point2.y) / CanvasManager.n);
 				//We get the state of the cell in that position and change the color of that space in the canvas
-				int state = Matrix.getMatrix()[x][y].getState();
+				try {
+					int state = Matrix.getMatrix()[x][y].getState();
+				
 				if (state < Cell.n) {
 					Color colr = new Color(255-state, 255-state, 255-state);
 					cm.fill(x, y, colr);
 				} else {
 					Color colr = new Color(0, 0, 0);
 					cm.fill(x, y, colr);
+				}
+				} catch (ArrayIndexOutOfBoundsException e) {
+					//The user just pressed the wrong place, nothing happened.
 				}
 				//at the end we increment the state of the cell
 				Matrix.incrementCellState(x, y);
@@ -85,7 +90,6 @@ public class GuiManagerBZ {
 		});
 
 		JScrollPane scroll = new JScrollPane(cm);
-		DragScrollHandler.createDragScrollHandlerFor(cm);
 
 		//Buttons
 		step = new JButton("STEP");

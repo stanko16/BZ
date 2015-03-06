@@ -130,11 +130,15 @@ public abstract class Matrix {
 	 * @param row the row number
 	 */
 	 public static void incrementCellState(int column, int row){
-		int b = Matrix.getMatrix()[column][row].getState();
-		if(b>-1&&b<244){
-			Matrix.getMatrix()[column][row].setState(b+50);
-		} else{
-			Matrix.getMatrix()[column][row].setState(0);
+		try {
+			int b = Matrix.getMatrix()[column][row].getState();
+			if(b>-1&&b<244){
+				Matrix.getMatrix()[column][row].setState(b+50);
+			} else{
+				Matrix.getMatrix()[column][row].setState(0);
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			//The user clicked a wrong place, nothing happens.
 		}
 	}
 	

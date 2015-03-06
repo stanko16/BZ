@@ -73,6 +73,10 @@ public class UpdateConstants extends JFrame {
 		
 		JButton update = new JButton("Update!");
 		update.addActionListener(new ActionListener() {
+			/**
+			 * We take the coefficients from the text fields and apply them to the Cell class, 
+			 * so then they'll be applied to the whole matrix
+			 */
 			public void actionPerformed(ActionEvent arg0) {
 				try{
 					Cell.setK1(Double.parseDouble(k1.getText()));
@@ -95,6 +99,9 @@ public class UpdateConstants extends JFrame {
 		JButton question = new JButton("?");
 		question.setBounds(27, 170, 46, 23);
 		question.addActionListener(new ActionListener() {
+			/**
+			 * Brief explanation of what each coefficient is used for 
+			 */
 			public void actionPerformed(ActionEvent arg0) {
 				JOptionPane.showMessageDialog(null,"k1 divides the influence of infected cells, "+"\n"+
 						"k2 divides the influence of the ill cells and"+"\n"+

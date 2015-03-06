@@ -9,6 +9,11 @@ import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
+/**
+ * This class was found on a forum. It enables the 
+ * @author unknown
+ *
+ */
 public class DragScrollHandler extends MouseAdapter {
 
 	private JComponent component;
